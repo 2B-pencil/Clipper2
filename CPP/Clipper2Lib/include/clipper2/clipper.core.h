@@ -124,7 +124,7 @@ namespace Clipper2Lib
      z_type z;
 
     template <typename T2>
-    inline void Init(const T2 x_ = 0, const T2 y_ = 0, const z_type z_ = 0)
+    inline void Init(const T2& x_ = 0, const T2& y_ = 0, const z_type& z_ = 0)
     {
       if constexpr (std::is_integral_v<T> &&
         is_round_invocable<T2>::value && !std::is_integral_v<T2>)
@@ -144,7 +144,7 @@ namespace Clipper2Lib
     explicit Point() : x(0), y(0), z(0) {};
 
     template <typename T2>
-    Point(const T2 x_, const T2 y_, const z_type z_ = 0)
+    Point(const T2& x_, const T2& y_, const z_type& z_ = 0)
     {
       Init(x_, y_);
       z = z_;
@@ -162,12 +162,12 @@ namespace Clipper2Lib
       Init(p.x, p.y, z_);
     }
 
-    Point operator * (const double scale) const
+    Point operator * (const double& scale) const
     {
       return Point(x * scale, y * scale, z);
     }
 
-    void SetZ(const z_type z_value) { z = z_value; }
+    void SetZ(const z_type& z_value) { z = z_value; }
 
     friend std::ostream& operator<<(std::ostream& os, const Point& point)
     {
@@ -178,7 +178,7 @@ namespace Clipper2Lib
 #else
 
     template <typename T2>
-    inline void Init(const T2 x_ = 0, const T2 y_ = 0)
+    inline void Init(const T2& x_ = 0, const T2& y_ = 0)
     {
       if constexpr (std::is_integral_v<T> &&
         is_round_invocable<T2>::value && !std::is_integral_v<T2>)
@@ -196,12 +196,12 @@ namespace Clipper2Lib
     explicit Point() : x(0), y(0) {};
 
     template <typename T2>
-    Point(const T2 x_, const T2 y_) { Init(x_, y_); }
+    Point(const T2& x_, const T2& y_) { Init(x_, y_); }
 
     template <typename T2>
     explicit Point(const Point<T2>& p) { Init(p.x, p.y); }
 
-    Point operator * (const double scale) const
+    Point operator * (const double& scale) const
     {
       return Point(x * scale, y * scale);
     }
@@ -287,13 +287,13 @@ namespace Clipper2Lib
     T right;
     T bottom;
 
-    Rect(T l, T t, T r, T b) :
+    Rect(const T &l, const T &t, const T &r, const T &b) :
       left(l),
       top(t),
       right(r),
       bottom(b) {}
 
-    Rect(bool is_valid = true)
+    Rect(const bool &is_valid = true)
     {
       if (is_valid)
       {
@@ -319,8 +319,8 @@ namespace Clipper2Lib
 
     T Width() const { return right - left; }
     T Height() const { return bottom - top; }
-    void Width(T width) { right = left + width; }
-    void Height(T height) { bottom = top + height; }
+    void Width(const T& width) { right = left + width; }
+    void Height(const T &height) { bottom = top + height; }
 
     Point<T> MidPoint() const
     {
@@ -331,10 +331,10 @@ namespace Clipper2Lib
     {
       Path<T> result;
       result.reserve(4);
-      result.push_back(Point<T>(left, top));
-      result.push_back(Point<T>(right, top));
-      result.push_back(Point<T>(right, bottom));
-      result.push_back(Point<T>(left, bottom));
+      result.emplace_back(Point<T>(left, top));
+      result.emplace_back(Point<T>(right, top));
+      result.emplace_back(Point<T>(right, bottom));
+      result.emplace_back(Point<T>(left, bottom));
       return result;
     }
 
@@ -392,7 +392,7 @@ namespace Clipper2Lib
   };
 
   template <typename T1, typename T2>
-  inline Rect<T1> ScaleRect(const Rect<T2>& rect, double scale)
+  inline Rect<T1> ScaleRect(const Rect<T2>& rect, const double& scale)
   {
     Rect<T1> result;
 
@@ -511,7 +511,7 @@ namespace Clipper2Lib
 
   template <typename T1, typename T2>
   inline Path<T1> ScalePath(const Path<T2>& path,
-    double scale_x, double scale_y, int& error_code)
+      double scale_x, double scale_y, int& error_code)
   {
     Path<T1> result;
     if (scale_x == 0 || scale_y == 0)
@@ -597,34 +597,34 @@ namespace Clipper2Lib
   }
 
   template<typename T>
-  inline double Sqr(T val)
+  inline double Sqr(const T& val)
   {
     return static_cast<double>(val) * static_cast<double>(val);
   }
 
   template<typename T>
   inline bool NearEqual(const Point<T>& p1,
-    const Point<T>& p2, double max_dist_sqrd)
+    const Point<T>& p2, const double& max_dist_sqrd)
   {
     return Sqr(p1.x - p2.x) + Sqr(p1.y - p2.y) < max_dist_sqrd;
   }
 
   template<typename T>
   inline Path<T> StripNearEqual(const Path<T>& path,
-    double max_dist_sqrd, bool is_closed_path)
+      const double &max_dist_sqrd, const bool& is_closed_path)
   {
     if (path.size() == 0) return Path<T>();
     Path<T> result;
     result.reserve(path.size());
     typename Path<T>::const_iterator path_iter = path.cbegin();
     Point<T> first_pt = *path_iter++, last_pt = first_pt;
-    result.push_back(first_pt);
+    result.emplace_back(first_pt);
     for (; path_iter != path.cend(); ++path_iter)
     {
       if (!NearEqual(*path_iter, last_pt, max_dist_sqrd))
       {
         last_pt = *path_iter;
-        result.push_back(last_pt);
+        result.emplace_back(last_pt);
       }
     }
     if (!is_closed_path) return result;
@@ -635,20 +635,20 @@ namespace Clipper2Lib
 
   template<typename T>
   inline Paths<T> StripNearEqual(const Paths<T>& paths,
-    double max_dist_sqrd, bool is_closed_path)
+      const double &max_dist_sqrd, const bool &is_closed_path)
   {
     Paths<T> result;
     result.reserve(paths.size());
     for (typename Paths<T>::const_iterator paths_citer = paths.cbegin();
       paths_citer != paths.cend(); ++paths_citer)
     {
-      result.push_back(StripNearEqual(*paths_citer, max_dist_sqrd, is_closed_path));
+      result.emplace_back(StripNearEqual(*paths_citer, max_dist_sqrd, is_closed_path));
     }
     return result;
   }
 
   template<typename T>
-  inline void StripDuplicates( Path<T>& path, bool is_closed_path)
+  inline void StripDuplicates( Path<T>& path, const bool &is_closed_path)
   {
     //https://stackoverflow.com/questions/1041620/whats-the-most-efficient-way-to-erase-duplicates-and-sort-a-vector#:~:text=Let%27s%20compare%20three%20approaches%3A
     path.erase(std::unique(path.begin(), path.end()), path.end());
@@ -657,7 +657,7 @@ namespace Clipper2Lib
   }
 
   template<typename T>
-  inline void StripDuplicates( Paths<T>& paths, bool is_closed_path)
+  inline void StripDuplicates( Paths<T>& paths, const bool &is_closed_path)
   {
     for (typename Paths<T>::iterator paths_citer = paths.begin();
       paths_citer != paths.end(); ++paths_citer)
@@ -683,7 +683,7 @@ namespace Clipper2Lib
     CheckPrecisionRange(precision, error_code);
   }
 
-  inline int TriSign(int64_t x) // returns 0, 1 or -1
+  inline int TriSign(const int64_t& x) // returns 0, 1 or -1
   {
     return (x > 0) - (x < 0); 
   }
@@ -699,7 +699,7 @@ namespace Clipper2Lib
     };
   };
 
-  inline MultiplyUInt64Result Multiply(uint64_t a, uint64_t b) // #834, #835
+  inline MultiplyUInt64Result Multiply(const uint64_t& a, const uint64_t &b) // #834, #835
   {
     const auto lo = [](uint64_t x) { return x & 0xFFFFFFFF; };
     const auto hi = [](uint64_t x) { return x >> 32; };
@@ -714,7 +714,7 @@ namespace Clipper2Lib
   }
 
   // returns true if (and only if) a * b == c * d
-  inline bool ProductsAreEqual(int64_t a, int64_t b, int64_t c, int64_t d)
+  inline bool ProductsAreEqual(const int64_t& a, const int64_t &b, const int64_t &c, const int64_t &d)
   {
 #if (defined(__clang__) || defined(__GNUC__)) && UINTPTR_MAX >= UINT64_MAX
     const auto ab = static_cast<__int128_t>(a) * static_cast<__int128_t>(b);
@@ -919,7 +919,7 @@ namespace Clipper2Lib
 #endif
 
   template<typename T>
-  inline Point<T> TranslatePoint(const Point<T>& pt, double dx, double dy)
+  inline Point<T> TranslatePoint(const Point<T>& pt, const double &dx, const double &dy)
   {
 #ifdef USINGZ
     return Point<T>(pt.x + dx, pt.y + dy, pt.z);
@@ -947,7 +947,7 @@ namespace Clipper2Lib
   }
 
   inline bool SegmentsIntersect(const Point64& seg1a, const Point64& seg1b,
-    const Point64& seg2a, const Point64& seg2b, bool inclusive = false)
+    const Point64& seg2a, const Point64& seg2b, const bool &inclusive = false)
   {
     if (inclusive)
     {

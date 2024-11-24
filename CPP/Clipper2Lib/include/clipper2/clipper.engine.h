@@ -41,12 +41,12 @@ namespace Clipper2Lib {
 		Empty = 0, OpenStart = 1, OpenEnd = 2, LocalMax = 4, LocalMin = 8
 	};
 
-	constexpr enum VertexFlags operator &(enum VertexFlags a, enum VertexFlags b)
+	constexpr enum VertexFlags operator &(const enum VertexFlags& a, const enum VertexFlags &b)
 	{
 		return (enum VertexFlags)(uint32_t(a) & uint32_t(b));
 	}
 
-	constexpr enum VertexFlags operator |(enum VertexFlags a, enum VertexFlags b)
+	constexpr enum VertexFlags operator |(const enum VertexFlags &a, const enum VertexFlags &b)
 	{
 		return (enum VertexFlags)(uint32_t(a) | uint32_t(b));
 	}
@@ -138,7 +138,7 @@ namespace Clipper2Lib {
 		Vertex* vertex;
 		PathType polytype;
 		bool is_open;
-		LocalMinima(Vertex* v, PathType pt, bool open) :
+		LocalMinima(Vertex* v, const PathType &pt, const bool &open) :
 			vertex(v), polytype(pt), is_open(open){}
 	};
 
@@ -186,11 +186,11 @@ namespace Clipper2Lib {
 		friend class ClipperBase;
 		LocalMinimaList minima_list_;
 		std::vector<Vertex*> vertex_lists_;
-		void AddLocMin(Vertex& vert, PathType polytype, bool is_open);
+		void AddLocMin(Vertex& vert, const PathType &polytype, const bool &is_open);
 	public:
 		virtual ~ReuseableDataContainer64();
 		void Clear();
-		void AddPaths(const Paths64& paths, PathType polytype, bool is_open);
+		void AddPaths(const Paths64& paths, const PathType &polytype, const bool &is_open);
 	};
 
 	// ClipperBase -------------------------------------------------------------
@@ -213,18 +213,18 @@ namespace Clipper2Lib {
         HorzSegmentList horz_seg_list_;
 		std::vector<HorzJoin> horz_join_list_;
 		void Reset();
-		inline void InsertScanline(int64_t y);
+		inline void InsertScanline(const int64_t &y);
 		inline bool PopScanline(int64_t &y);
-		inline bool PopLocalMinima(int64_t y, LocalMinima*& local_minima);
+		inline bool PopLocalMinima(const int64_t &y, LocalMinima*& local_minima);
 		void DisposeAllOutRecs();
 		void DisposeVerticesAndLocalMinima();
 		void DeleteEdges(Active*& e);
-		inline void AddLocMin(Vertex &vert, PathType polytype, bool is_open);
+		inline void AddLocMin(Vertex &vert, const PathType& polytype, const bool &is_open);
 		bool IsContributingClosed(const Active &e) const;
 		inline bool IsContributingOpen(const Active &e) const;
 		void SetWindCountForClosedPathEdge(Active &edge);
 		void SetWindCountForOpenPathEdge(Active &e);
-		void InsertLocalMinimaIntoAEL(int64_t bot_y);
+		void InsertLocalMinimaIntoAEL(const int64_t &bot_y);
 		void InsertLeftEdge(Active &e);
 		inline void PushHorz(Active &e);
 		inline bool PopHorz(Active *&e);
@@ -232,21 +232,21 @@ namespace Clipper2Lib {
 		inline void UpdateEdgeIntoAEL(Active *e);
 		void IntersectEdges(Active &e1, Active &e2, const Point64& pt);
 		inline void DeleteFromAEL(Active &e);
-		inline void AdjustCurrXAndCopyToSEL(const int64_t top_y);
-		void DoIntersections(const int64_t top_y);
-		void AddNewIntersectNode(Active &e1, Active &e2, const int64_t top_y);
-		bool BuildIntersectList(const int64_t top_y);
+		inline void AdjustCurrXAndCopyToSEL(const int64_t& top_y);
+		void DoIntersections(const int64_t& top_y);
+		void AddNewIntersectNode(Active &e1, Active &e2, const int64_t& top_y);
+		bool BuildIntersectList(const int64_t& top_y);
 		void ProcessIntersectList();
 		void SwapPositionsInAEL(Active& edge1, Active& edge2);
 		OutRec* NewOutRec();
 		OutPt* AddOutPt(const Active &e, const Point64& pt);
 		OutPt* AddLocalMinPoly(Active &e1, Active &e2,
-			const Point64& pt, bool is_new = false);
+			const Point64& pt, const bool &is_new = false);
 		OutPt* AddLocalMaxPoly(Active &e1, Active &e2, const Point64& pt);
 		void DoHorizontal(Active &horz);
 		bool ResetHorzDirection(const Active &horz, const Vertex* max_vertex,
 			int64_t &horz_left, int64_t &horz_right);
-		void DoTopOfScanbeam(const int64_t top_y);
+		void DoTopOfScanbeam(const int64_t& top_y);
 		Active *DoMaxima(Active &e);
 		void JoinOutrecPaths(Active &e1, Active &e2);
 		void FixSelfIntersects(OutRec* outrec);
@@ -258,9 +258,9 @@ namespace Clipper2Lib {
 
 		void Split(Active& e, const Point64& pt);
 		inline void CheckJoinLeft(Active& e,
-			const Point64& pt, bool check_curr_x = false);
+			const Point64& pt, const bool &check_curr_x = false);
 		inline void CheckJoinRight(Active& e,
-			const Point64& pt, bool check_curr_x = false);
+			const Point64& pt, const bool &check_curr_x = false);
 	protected:
 		bool preserve_collinear_ = true;
 		bool reverse_solution_ = false;
@@ -268,7 +268,7 @@ namespace Clipper2Lib {
 		bool has_open_paths_ = false;
 		bool succeeded_ = true;
 		OutRecList outrec_list_; //pointers in case list memory reallocated
-		bool ExecuteInternal(ClipType ct, FillRule ft, bool use_polytrees);
+		bool ExecuteInternal(const ClipType &ct, const FillRule &ft, const bool &use_polytrees);
 		void CleanCollinear(OutRec* outrec);
 		bool CheckBounds(OutRec* outrec);
 		bool CheckSplitOwner(OutRec* outrec, OutRecList* splits);
@@ -278,14 +278,14 @@ namespace Clipper2Lib {
 		void SetZ(const Active& e1, const Active& e2, Point64& pt);
 #endif
 		void CleanUp();  // unlike Clear, CleanUp preserves added paths
-		void AddPath(const Path64& path, PathType polytype, bool is_open);
-		void AddPaths(const Paths64& paths, PathType polytype, bool is_open);
+		void AddPath(const Path64& path, const PathType& polytype, const bool &is_open);
+		void AddPaths(const Paths64& paths, const PathType& polytype, const bool &is_open);
 	public:
 		virtual ~ClipperBase();
 		int ErrorCode() const { return error_code_; };
-		void PreserveCollinear(bool val) { preserve_collinear_ = val; };
+		void PreserveCollinear(const bool& val) { preserve_collinear_ = val; };
 		bool PreserveCollinear() const { return preserve_collinear_;};
-		void ReverseSolution(bool val) { reverse_solution_ = val; };
+		void ReverseSolution(const bool& val) { reverse_solution_ = val; };
 		bool ReverseSolution() const { return reverse_solution_; };
 		void Clear();
 		void AddReuseableData(const ReuseableDataContainer64& reuseable_data);
@@ -349,12 +349,12 @@ namespace Clipper2Lib {
 			childs_.resize(0);
 		}
 
-		PolyPath64* operator [] (size_t index) const
+		PolyPath64* operator [] (const size_t& index) const
 		{
 			return childs_[index].get(); //std::unique_ptr
 		}
 
-		PolyPath64* Child(size_t index) const
+		PolyPath64* Child(const size_t& index) const
 		{
 			return childs_[index].get();
 		}
@@ -416,12 +416,12 @@ namespace Clipper2Lib {
 			childs_.resize(0);
 		}
 
-		PolyPathD* operator [] (size_t index) const
+		PolyPathD* operator [] (const size_t &index) const
 		{
 			return childs_[index].get();
 		}
 
-		PolyPathD* Child(size_t index) const
+		PolyPathD* Child(const size_t &index) const
 		{
 			return childs_[index].get();
 		}
@@ -429,7 +429,7 @@ namespace Clipper2Lib {
 		PolyPathDList::const_iterator begin() const { return childs_.cbegin(); }
 		PolyPathDList::const_iterator end() const { return childs_.cend(); }
 
-		void SetScale(double value) { scale_ = value; }
+		void SetScale(const double &value) { scale_ = value; }
 		double Scale() const { return scale_; }
 
 		PolyPathD* AddChild(const Path64& path) override
@@ -485,14 +485,14 @@ namespace Clipper2Lib {
 			AddPaths(clips, PathType::Clip, false);
 		}
 
-		bool Execute(ClipType clip_type,
-			FillRule fill_rule, Paths64& closed_paths)
+		bool Execute(const ClipType &clip_type,
+			const FillRule &fill_rule, Paths64& closed_paths)
 		{
 			Paths64 dummy;
 			return Execute(clip_type, fill_rule, closed_paths, dummy);
 		}
 
-		bool Execute(ClipType clip_type, FillRule fill_rule,
+		bool Execute(const ClipType &clip_type, const FillRule &fill_rule,
 			Paths64& closed_paths, Paths64& open_paths)
 		{
 			closed_paths.clear();
@@ -503,14 +503,14 @@ namespace Clipper2Lib {
 			return succeeded_;
 		}
 
-		bool Execute(ClipType clip_type, FillRule fill_rule, PolyTree64& polytree)
+		bool Execute(const ClipType &clip_type, const FillRule &fill_rule, PolyTree64& polytree)
 		{
 			Paths64 dummy;
 			return Execute(clip_type, fill_rule, polytree, dummy);
 		}
 
-		bool Execute(ClipType clip_type,
-			FillRule fill_rule, PolyTree64& polytree, Paths64& open_paths)
+		bool Execute(const ClipType &clip_type,
+			const FillRule &fill_rule, PolyTree64& polytree, Paths64& open_paths)
 		{
 			if (ExecuteInternal(clip_type, fill_rule, true))
 			{
@@ -591,14 +591,14 @@ namespace Clipper2Lib {
 			AddPaths(ScalePaths<int64_t, double>(clips, scale_, error_code_), PathType::Clip, false);
 		}
 
-		bool Execute(ClipType clip_type, FillRule fill_rule, PathsD& closed_paths)
+		bool Execute(const ClipType &clip_type, const FillRule &fill_rule, PathsD& closed_paths)
 		{
 			PathsD dummy;
 			return Execute(clip_type, fill_rule, closed_paths, dummy);
 		}
 
-		bool Execute(ClipType clip_type,
-			FillRule fill_rule, PathsD& closed_paths, PathsD& open_paths)
+		bool Execute(const ClipType &clip_type,
+			const FillRule &fill_rule, PathsD& closed_paths, PathsD& open_paths)
 		{
 #ifdef USINGZ
 			CheckCallback();
@@ -611,14 +611,14 @@ namespace Clipper2Lib {
 			return succeeded_;
 		}
 
-		bool Execute(ClipType clip_type, FillRule fill_rule, PolyTreeD& polytree)
+		bool Execute(const ClipType &clip_type, const FillRule &fill_rule, PolyTreeD& polytree)
 		{
 			PathsD dummy;
 			return Execute(clip_type, fill_rule, polytree, dummy);
 		}
 
-		bool Execute(ClipType clip_type,
-			FillRule fill_rule, PolyTreeD& polytree, PathsD& open_paths)
+		bool Execute(const ClipType &clip_type,
+			const FillRule &fill_rule, PolyTreeD& polytree, PathsD& open_paths)
 		{
 #ifdef USINGZ
 			CheckCallback();

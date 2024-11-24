@@ -22,7 +22,7 @@
 
 namespace Clipper2Lib {
 
-  inline Paths64 BooleanOp(ClipType cliptype, FillRule fillrule,
+  inline Paths64 BooleanOp(const ClipType& cliptype, const FillRule& fillrule,
     const Paths64& subjects, const Paths64& clips)
   {
     Paths64 result;
@@ -33,7 +33,7 @@ namespace Clipper2Lib {
     return result;
   }
 
-  inline void BooleanOp(ClipType cliptype, FillRule fillrule,
+  inline void BooleanOp(const ClipType &cliptype, const FillRule &fillrule,
     const Paths64& subjects, const Paths64& clips, PolyTree64& solution)
   {
     Paths64 sol_open;
@@ -43,7 +43,7 @@ namespace Clipper2Lib {
     clipper.Execute(cliptype, fillrule, solution, sol_open);
   }
 
-  inline PathsD BooleanOp(ClipType cliptype, FillRule fillrule,
+  inline PathsD BooleanOp(const ClipType &cliptype, const FillRule &fillrule,
     const PathsD& subjects, const PathsD& clips, int precision = 2)
   {
     int error_code = 0;
@@ -57,7 +57,7 @@ namespace Clipper2Lib {
     return result;
   }
 
-  inline void BooleanOp(ClipType cliptype, FillRule fillrule,
+  inline void BooleanOp(const ClipType &cliptype, const FillRule &fillrule,
     const PathsD& subjects, const PathsD& clips,
     PolyTreeD& polytree, int precision = 2)
   {
@@ -71,27 +71,27 @@ namespace Clipper2Lib {
     clipper.Execute(cliptype, fillrule, polytree);
   }
 
-  inline Paths64 Intersect(const Paths64& subjects, const Paths64& clips, FillRule fillrule)
+  inline Paths64 Intersect(const Paths64& subjects, const Paths64& clips, const FillRule &fillrule)
   {
     return BooleanOp(ClipType::Intersection, fillrule, subjects, clips);
   }
 
-  inline PathsD Intersect(const PathsD& subjects, const PathsD& clips, FillRule fillrule, int decimal_prec = 2)
+  inline PathsD Intersect(const PathsD& subjects, const PathsD& clips, const FillRule &fillrule, int decimal_prec = 2)
   {
     return BooleanOp(ClipType::Intersection, fillrule, subjects, clips, decimal_prec);
   }
 
-  inline Paths64 Union(const Paths64& subjects, const Paths64& clips, FillRule fillrule)
+  inline Paths64 Union(const Paths64& subjects, const Paths64& clips, const FillRule &fillrule)
   {
     return BooleanOp(ClipType::Union, fillrule, subjects, clips);
   }
 
-  inline PathsD Union(const PathsD& subjects, const PathsD& clips, FillRule fillrule, int decimal_prec = 2)
+  inline PathsD Union(const PathsD& subjects, const PathsD& clips, const FillRule &fillrule, int decimal_prec = 2)
   {
     return BooleanOp(ClipType::Union, fillrule, subjects, clips, decimal_prec);
   }
 
-  inline Paths64 Union(const Paths64& subjects, FillRule fillrule)
+  inline Paths64 Union(const Paths64& subjects, const FillRule &fillrule)
   {
     Paths64 result;
     Clipper64 clipper;
@@ -100,7 +100,7 @@ namespace Clipper2Lib {
     return result;
   }
 
-  inline PathsD Union(const PathsD& subjects, FillRule fillrule, int precision = 2)
+  inline PathsD Union(const PathsD& subjects, const FillRule &fillrule, int precision = 2)
   {
     PathsD result;
     int error_code = 0;
@@ -112,29 +112,29 @@ namespace Clipper2Lib {
     return result;
   }
 
-  inline Paths64 Difference(const Paths64& subjects, const Paths64& clips, FillRule fillrule)
+  inline Paths64 Difference(const Paths64& subjects, const Paths64& clips, const FillRule &fillrule)
   {
     return BooleanOp(ClipType::Difference, fillrule, subjects, clips);
   }
 
-  inline PathsD Difference(const PathsD& subjects, const PathsD& clips, FillRule fillrule, int decimal_prec = 2)
+  inline PathsD Difference(const PathsD& subjects, const PathsD& clips, const FillRule &fillrule, int decimal_prec = 2)
   {
     return BooleanOp(ClipType::Difference, fillrule, subjects, clips, decimal_prec);
   }
 
-  inline Paths64 Xor(const Paths64& subjects, const Paths64& clips, FillRule fillrule)
+  inline Paths64 Xor(const Paths64& subjects, const Paths64& clips, const FillRule &fillrule)
   {
     return BooleanOp(ClipType::Xor, fillrule, subjects, clips);
   }
 
-  inline PathsD Xor(const PathsD& subjects, const PathsD& clips, FillRule fillrule, int decimal_prec = 2)
+  inline PathsD Xor(const PathsD& subjects, const PathsD& clips, const FillRule &fillrule, int decimal_prec = 2)
   {
     return BooleanOp(ClipType::Xor, fillrule, subjects, clips, decimal_prec);
   }
 
-  inline Paths64 InflatePaths(const Paths64& paths, double delta,
-    JoinType jt, EndType et, double miter_limit = 2.0,
-    double arc_tolerance = 0.0)
+  inline Paths64 InflatePaths(const Paths64& paths, const double &delta,
+      const JoinType &jt, const EndType &et, const double &miter_limit = 2.0,
+      const double &arc_tolerance = 0.0)
   {
     if (!delta) return paths;
     ClipperOffset clip_offset(miter_limit, arc_tolerance);
@@ -144,9 +144,9 @@ namespace Clipper2Lib {
     return solution;
   }
 
-  inline PathsD InflatePaths(const PathsD& paths, double delta,
-    JoinType jt, EndType et, double miter_limit = 2.0,
-    int precision = 2, double arc_tolerance = 0.0)
+  inline PathsD InflatePaths(const PathsD& paths, const double &delta,
+      const JoinType &jt, const EndType &et, const double &miter_limit = 2.0,
+    int precision = 2, const double &arc_tolerance = 0.0)
   {
     int error_code = 0;
     CheckPrecisionRange(precision, error_code);
@@ -162,7 +162,7 @@ namespace Clipper2Lib {
   }
 
   template <typename T>
-  inline Path<T> TranslatePath(const Path<T>& path, T dx, T dy)
+  inline Path<T> TranslatePath(const Path<T>& path, const T& dx, const T& dy)
   {
     Path<T> result;
     result.reserve(path.size());
@@ -171,18 +171,18 @@ namespace Clipper2Lib {
     return result;
   }
 
-  inline Path64 TranslatePath(const Path64& path, int64_t dx, int64_t dy)
+  inline Path64 TranslatePath(const Path64& path, const int64_t &dx, const int64_t &dy)
   {
     return TranslatePath<int64_t>(path, dx, dy);
   }
 
-  inline PathD TranslatePath(const PathD& path, double dx, double dy)
+  inline PathD TranslatePath(const PathD& path, const double &dx, const double &dy)
   {
     return TranslatePath<double>(path, dx, dy);
   }
 
   template <typename T>
-  inline Paths<T> TranslatePaths(const Paths<T>& paths, T dx, T dy)
+  inline Paths<T> TranslatePaths(const Paths<T>& paths, const T& dx, const T& dy)
   {
     Paths<T> result;
     result.reserve(paths.size());
@@ -191,12 +191,12 @@ namespace Clipper2Lib {
     return result;
   }
 
-  inline Paths64 TranslatePaths(const Paths64& paths, int64_t dx, int64_t dy)
+  inline Paths64 TranslatePaths(const Paths64& paths, const int64_t &dx, const int64_t &dy)
   {
     return TranslatePaths<int64_t>(paths, dx, dy);
   }
 
-  inline PathsD TranslatePaths(const PathsD& paths, double dx, double dy)
+  inline PathsD TranslatePaths(const PathsD& paths, const double &dx, const double &dy)
   {
     return TranslatePaths<double>(paths, dx, dy);
   }
@@ -272,14 +272,14 @@ namespace Clipper2Lib {
 
     inline void PolyPathToPaths64(const PolyPath64& polypath, Paths64& paths)
     {
-      paths.push_back(polypath.Polygon());
+      paths.emplace_back(polypath.Polygon());
       for (const auto& child : polypath)
         PolyPathToPaths64(*child, paths);
     }
 
     inline void PolyPathToPathsD(const PolyPathD& polypath, PathsD& paths)
     {
-      paths.push_back(polypath.Polygon());
+      paths.emplace_back(polypath.Polygon());
       for (const auto& child : polypath)
         PolyPathToPathsD(*child, paths);
     }
@@ -312,7 +312,7 @@ namespace Clipper2Lib {
     }
 
     static void OutlinePolyPath(std::ostream& os,
-      size_t idx, bool isHole, size_t count, const std::string& preamble)
+        const size_t &idx, const bool &isHole, const size_t &count, const std::string& preamble)
     {
       std::string plural = (count == 1) ? "." : "s.";
       if (isHole)
@@ -324,7 +324,7 @@ namespace Clipper2Lib {
     }
 
     static void OutlinePolyPath64(std::ostream& os, const PolyPath64& pp,
-      size_t idx, std::string preamble)
+        const size_t &idx, const std::string &preamble)
     {
       OutlinePolyPath(os, idx, pp.IsHole(), pp.Count(), preamble);
       for (size_t i = 0; i < pp.Count(); ++i)
@@ -333,7 +333,7 @@ namespace Clipper2Lib {
     }
 
     static void OutlinePolyPathD(std::ostream& os, const PolyPathD& pp,
-      size_t idx, std::string preamble)
+        const size_t &idx, const std::string &preamble)
     {
       OutlinePolyPath(os, idx, pp.IsHole(), pp.Count(), preamble);
       for (size_t i = 0; i < pp.Count(); ++i)
@@ -342,15 +342,15 @@ namespace Clipper2Lib {
     }
 
     template<typename T, typename U>
-    inline constexpr void MakePathGeneric(const T an_array,
-      size_t array_size, std::vector<U>& result)
+    inline constexpr void MakePathGeneric(const T& an_array,
+        const size_t &array_size, std::vector<U>& result)
     {
       result.reserve(array_size / 2);
       for (size_t i = 0; i < array_size; i +=2)
 #ifdef USINGZ
-        result.push_back( U{ an_array[i], an_array[i + 1], 0} );
+        result.emplace_back( U{ an_array[i], an_array[i + 1], 0} );
 #else
-        result.push_back( U{ an_array[i], an_array[i + 1]} );
+        result.emplace_back( U{ an_array[i], an_array[i + 1]} );
 #endif
     }
 
@@ -518,20 +518,20 @@ namespace Clipper2Lib {
     }
 
     prevIt = srcIt++;
-    dst.push_back(*prevIt);
+    dst.emplace_back(*prevIt);
     for (; srcIt != stop; ++srcIt)
     {
       if (!IsCollinear(*prevIt, *srcIt, *(srcIt + 1)))
       {
         prevIt = srcIt;
-        dst.push_back(*prevIt);
+        dst.emplace_back(*prevIt);
       }
     }
 
     if (is_open_path)
-      dst.push_back(*srcIt);
+      dst.emplace_back(*srcIt);
     else if (!IsCollinear(*prevIt, *stop, dst[0]))
-      dst.push_back(*stop);
+      dst.emplace_back(*stop);
     else
     {
       while (dst.size() > 2 &&
@@ -603,10 +603,10 @@ namespace Clipper2Lib {
     double dx = co, dy = si;
     Path<T> result;
     result.reserve(steps);
-    result.push_back(Point<T>(center.x + radiusX, static_cast<double>(center.y)));
+    result.emplace_back(Point<T>(center.x + radiusX, static_cast<double>(center.y)));
     for (size_t i = 1; i < steps; ++i)
     {
-      result.push_back(Point<T>(center.x + radiusX * dx, center.y + radiusY * dy));
+      result.emplace_back(Point<T>(center.x + radiusX * dx, center.y + radiusY * dy));
       double x = dx * co - dy * si;
       dy = dy * co + dx * si;
       dx = x;
@@ -700,7 +700,7 @@ namespace Clipper2Lib {
     Path<T> result;
     result.reserve(len);
     for (typename Path<T>::size_type i = 0; i < len; ++i)
-      if (!flags[i]) result.push_back(path[i]);
+      if (!flags[i]) result.emplace_back(path[i]);
     return result;
   }
 
@@ -711,7 +711,7 @@ namespace Clipper2Lib {
     Paths<T> result;
     result.reserve(paths.size());
     for (const auto& path : paths)
-      result.push_back(SimplifyPath(path, epsilon, isClosedPath));
+      result.emplace_back(SimplifyPath(path, epsilon, isClosedPath));
     return result;
   }
 
@@ -749,7 +749,7 @@ namespace Clipper2Lib {
     result.reserve(len);
     for (typename Path<T>::size_type i = 0; i < len; ++i)
       if (flags[i])
-        result.push_back(path[i]);
+        result.emplace_back(path[i]);
     return result;
   }
 

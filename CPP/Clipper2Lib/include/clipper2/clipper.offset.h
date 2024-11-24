@@ -26,7 +26,7 @@ enum class EndType {Polygon, Joined, Butt, Square, Round};
 //Joined : offsets both sides of a path, with joined ends
 //Polygon: offsets only one side of a closed path
 
-typedef std::function<double(const Path64& path, const PathD& path_normals, size_t curr_idx, size_t prev_idx)> DeltaCallback64;
+typedef std::function<double(const Path64& path, const PathD& path_normals, const size_t &curr_idx, const size_t &prev_idx)> DeltaCallback64;
 
 class ClipperOffset {
 private:
@@ -38,7 +38,7 @@ private:
 		bool is_reversed = false;
 		JoinType join_type;
 		EndType end_type;
-		Group(const Paths64& _paths, JoinType _join_type, EndType _end_type);
+		Group(const Paths64& _paths, const JoinType &_join_type, const EndType& _end_type);
 	};
 
 	int   error_code_ = 0;
@@ -69,22 +69,22 @@ private:
 	DeltaCallback64 deltaCallback64_ = nullptr;
 	size_t CalcSolutionCapacity();
 	bool CheckReverseOrientation();
-	void DoBevel(const Path64& path, size_t j, size_t k);
-	void DoSquare(const Path64& path, size_t j, size_t k);
-	void DoMiter(const Path64& path, size_t j, size_t k, double cos_a);
-	void DoRound(const Path64& path, size_t j, size_t k, double angle);
+	void DoBevel(const Path64& path, const size_t &j, const size_t &k);
+	void DoSquare(const Path64& path, const size_t &j, const size_t &k);
+	void DoMiter(const Path64& path, const size_t &j, const size_t &k, const double &cos_a);
+	void DoRound(const Path64& path, const size_t &j, const size_t &k, const double &angle);
 	void BuildNormals(const Path64& path);
 	void OffsetPolygon(Group& group, const Path64& path);
 	void OffsetOpenJoined(Group& group, const Path64& path);
 	void OffsetOpenPath(Group& group, const Path64& path);
-	void OffsetPoint(Group& group, const Path64& path, size_t j, size_t k);
+	void OffsetPoint(Group& group, const Path64& path, const size_t &j, const size_t &k);
 	void DoGroupOffset(Group &group);
-	void ExecuteInternal(double delta);
+	void ExecuteInternal(const double &delta);
 public:
-	explicit ClipperOffset(double miter_limit = 2.0,
-		double arc_tolerance = 0.0,
-		bool preserve_collinear = false,
-		bool reverse_solution = false) :
+	explicit ClipperOffset(const double &miter_limit = 2.0,
+		const double &arc_tolerance = 0.0,
+		const bool &preserve_collinear = false,
+		const bool &reverse_solution = false) :
 		miter_limit_(miter_limit), arc_tolerance_(arc_tolerance),
 		preserve_collinear_(preserve_collinear),
 		reverse_solution_(reverse_solution) { };
@@ -92,26 +92,26 @@ public:
 	~ClipperOffset() { Clear(); };
 
 	int ErrorCode() const { return error_code_; };
-	void AddPath(const Path64& path, JoinType jt_, EndType et_);
-	void AddPaths(const Paths64& paths, JoinType jt_, EndType et_);
+	void AddPath(const Path64& path, const JoinType& jt_, const EndType &et_);
+	void AddPaths(const Paths64& paths, const JoinType &jt_, const EndType &et_);
 	void Clear() { groups_.clear(); norms.clear(); };
 	
-	void Execute(double delta, Paths64& paths);
-	void Execute(double delta, PolyTree64& polytree);
+	void Execute(const double &delta, Paths64& paths);
+	void Execute(const double &delta, PolyTree64& polytree);
 	void Execute(DeltaCallback64 delta_cb, Paths64& paths);
 
 	double MiterLimit() const { return miter_limit_; }
-	void MiterLimit(double miter_limit) { miter_limit_ = miter_limit; }
+	void MiterLimit(const double &miter_limit) { miter_limit_ = miter_limit; }
 
 	//ArcTolerance: needed for rounded offsets (See offset_triginometry2.svg)
 	double ArcTolerance() const { return arc_tolerance_; }
-	void ArcTolerance(double arc_tolerance) { arc_tolerance_ = arc_tolerance; }
+	void ArcTolerance(const double &arc_tolerance) { arc_tolerance_ = arc_tolerance; }
 
 	bool PreserveCollinear() const { return preserve_collinear_; }
-	void PreserveCollinear(bool preserve_collinear){preserve_collinear_ = preserve_collinear;}
+	void PreserveCollinear(const bool &preserve_collinear){preserve_collinear_ = preserve_collinear;}
 	
 	bool ReverseSolution() const { return reverse_solution_; }
-	void ReverseSolution(bool reverse_solution) {reverse_solution_ = reverse_solution;}
+	void ReverseSolution(const bool &reverse_solution) {reverse_solution_ = reverse_solution;}
 
 #ifdef USINGZ
 	void SetZCallback(ZCallback64 cb) { zCallback64_ = cb; }

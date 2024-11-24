@@ -20,7 +20,7 @@ namespace Clipper2Lib
 
   namespace detail
   {
-    inline Paths64 Minkowski(const Path64& pattern, const Path64& path, bool isSum, bool isClosed)
+    inline Paths64 Minkowski(const Path64& pattern, const Path64& path, const bool &isSum, const bool &isClosed)
     {
       size_t delta = isClosed ? 0 : 1;
       size_t patLen = pattern.size(), pathLen = path.size();
@@ -74,7 +74,7 @@ namespace Clipper2Lib
       return result;
     }
 
-    inline Paths64 Union(const Paths64& subjects, FillRule fillrule)
+    inline Paths64 Union(const Paths64& subjects, const FillRule &fillrule)
     {
       Paths64 result;
       Clipper64 clipper;
@@ -85,12 +85,12 @@ namespace Clipper2Lib
 
   } // namespace internal
 
-  inline Paths64 MinkowskiSum(const Path64& pattern, const Path64& path, bool isClosed)
+  inline Paths64 MinkowskiSum(const Path64& pattern, const Path64& path, const bool &isClosed)
   {
     return detail::Union(detail::Minkowski(pattern, path, true, isClosed), FillRule::NonZero);
   }
 
-  inline PathsD MinkowskiSum(const PathD& pattern, const PathD& path, bool isClosed, int decimalPlaces = 2)
+  inline PathsD MinkowskiSum(const PathD& pattern, const PathD& path, const bool &isClosed, const int &decimalPlaces = 2)
   {
     int error_code = 0;
     double scale = pow(10, decimalPlaces);
@@ -100,12 +100,12 @@ namespace Clipper2Lib
     return ScalePaths<double, int64_t>(tmp, 1 / scale, error_code);
   }
 
-  inline Paths64 MinkowskiDiff(const Path64& pattern, const Path64& path, bool isClosed)
+  inline Paths64 MinkowskiDiff(const Path64& pattern, const Path64& path, const bool &isClosed)
   {
     return detail::Union(detail::Minkowski(pattern, path, false, isClosed), FillRule::NonZero);
   }
 
-  inline PathsD MinkowskiDiff(const PathD& pattern, const PathD& path, bool isClosed, int decimalPlaces = 2)
+  inline PathsD MinkowskiDiff(const PathD& pattern, const PathD& path, const bool &isClosed, const int &decimalPlaces = 2)
   {
     int error_code = 0;
     double scale = pow(10, decimalPlaces);

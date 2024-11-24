@@ -51,12 +51,12 @@ namespace Clipper2Lib
     OutPt2List edges_[8]; // clockwise and counter-clockwise
     std::vector<Location> start_locs_;
     void CheckEdges();
-    void TidyEdges(size_t idx, OutPt2List& cw, OutPt2List& ccw);
+    void TidyEdges(const size_t &idx, OutPt2List& cw, OutPt2List& ccw);
     void GetNextLocation(const Path64& path,
-      Location& loc, size_t& i, size_t highI);
-    OutPt2* Add(Point64 pt, bool start_new = false);
-    void AddCorner(Location prev, Location curr);
-    void AddCorner(Location& loc, bool isClockwise);
+      Location& loc, size_t& i, const size_t &highI);
+    OutPt2* Add(const Point64& pt, const bool &start_new = false);
+    void AddCorner(const Location &prev, const Location &curr);
+    void AddCorner(Location& loc, const bool &isClockwise);
   public:
     explicit RectClip64(const Rect64& rect) :
       rect_(rect),

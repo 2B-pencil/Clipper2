@@ -204,23 +204,23 @@ namespace Clipper2Lib {
     }
   }
 
-  inline Location GetAdjacentLocation(Location loc, bool isClockwise)
+  inline Location GetAdjacentLocation(const Location &loc, const bool &isClockwise)
   {
     int delta = (isClockwise) ? 1 : 3;
     return static_cast<Location>((static_cast<int>(loc) + delta) % 4);
   }
 
-  inline bool HeadingClockwise(Location prev, Location curr)
+  inline bool HeadingClockwise(const Location &prev, const Location &curr)
   {
     return (static_cast<int>(prev) + 1) % 4 == static_cast<int>(curr);
   }
 
-  inline bool AreOpposites(Location prev, Location curr)
+  inline bool AreOpposites(const Location &prev, const Location &curr)
   {
     return abs(static_cast<int>(prev) - static_cast<int>(curr)) == 2;
   }
 
-  inline bool IsClockwise(Location prev, Location curr,
+  inline bool IsClockwise(const Location& prev, const Location &curr,
     const Point64& prev_pt, const Point64& curr_pt, const Point64& rect_mp)
   {
     if (AreOpposites(prev, curr))
@@ -255,7 +255,7 @@ namespace Clipper2Lib {
     return result;
   }
 
-  inline bool IsHeadingClockwise(const Point64& pt1, const Point64& pt2, int edgeIdx)
+  inline bool IsHeadingClockwise(const Point64& pt1, const Point64& pt2, const int& edgeIdx)
   {
     switch (edgeIdx)
     {
@@ -282,7 +282,7 @@ namespace Clipper2Lib {
   {
     if (op->edge) return;
     op->edge = &edge;
-    edge.push_back(op);
+    edge.emplace_back(op);
   }
 
   inline void UncoupleEdge(OutPt2* op)
@@ -300,7 +300,7 @@ namespace Clipper2Lib {
     op->edge = nullptr;
   }
 
-  inline void SetNewOwner(OutPt2* op, size_t new_idx)
+  inline void SetNewOwner(OutPt2* op, const size_t &new_idx)
   {
     op->owner_idx = new_idx;
     OutPt2* op2 = op->next;
@@ -315,7 +315,7 @@ namespace Clipper2Lib {
   // RectClip64
   //----------------------------------------------------------------------------
 
-  OutPt2* RectClip64::Add(Point64 pt, bool start_new)
+  OutPt2* RectClip64::Add(const Point64& pt, const bool &start_new)
   {
     // this method is only called by InternalExecute.
     // Later splitting & rejoining won't create additional op's,
@@ -328,7 +328,7 @@ namespace Clipper2Lib {
       result->pt = pt;
       result->next = result;
       result->prev = result;
-      results_.push_back(result);
+      results_.emplace_back(result);
     }
     else
     {
@@ -347,7 +347,7 @@ namespace Clipper2Lib {
     return result;
   }
 
-  void RectClip64::AddCorner(Location prev, Location curr)
+  void RectClip64::AddCorner(const Location &prev, const Location &curr)
   {
     if (HeadingClockwise(prev, curr))
       Add(rect_as_path_[static_cast<size_t>(prev)]);
@@ -355,7 +355,7 @@ namespace Clipper2Lib {
       Add(rect_as_path_[static_cast<size_t>(curr)]);
   }
 
-  void RectClip64::AddCorner(Location& loc, bool isClockwise)
+  void RectClip64::AddCorner(Location& loc, const bool &isClockwise)
   {
     if (isClockwise)
     {
@@ -370,7 +370,7 @@ namespace Clipper2Lib {
   }
 
   void RectClip64::GetNextLocation(const Path64& path,
-    Location& loc, size_t& i, size_t highI)
+    Location& loc, size_t& i, const size_t &highI)
   {
     switch (loc)
     {
@@ -489,7 +489,7 @@ namespace Clipper2Lib {
         {
           bool isClockw = IsClockwise(prev, loc, prev_pt, path[i], rect_mp_);
           do {
-            start_locs_.push_back(prev);
+            start_locs_.emplace_back(prev);
             prev = GetAdjacentLocation(prev, isClockw);
           } while (prev != loc);
           crossing_loc = crossing_prev; // still not crossed
@@ -514,7 +514,7 @@ namespace Clipper2Lib {
         if (first_cross_ == Location::Inside)
         {
           first_cross_ = crossing_loc;
-          start_locs_.push_back(prev);
+          start_locs_.emplace_back(prev);
         }
         else if (prev != crossing_loc)
         {
@@ -536,7 +536,7 @@ namespace Clipper2Lib {
         if (first_cross_ == Location::Inside)
         {
           first_cross_ = loc;
-          start_locs_.push_back(prev);
+          start_locs_.emplace_back(prev);
         }
 
         loc = crossing_loc;
@@ -663,7 +663,7 @@ namespace Clipper2Lib {
     }
   }
 
-  void RectClip64::TidyEdges(size_t idx, OutPt2List& cw, OutPt2List& ccw)
+  void RectClip64::TidyEdges(const size_t& idx, OutPt2List& cw, OutPt2List& ccw)
   {
     if (ccw.empty()) return;
     bool isHorz = ((idx == 1) || (idx == 3));
@@ -750,7 +750,7 @@ namespace Clipper2Lib {
       if (!isRejoining)
       {
         size_t new_idx = results_.size();
-        results_.push_back(p1a);
+        results_.emplace_back(p1a);
         SetNewOwner(p1a, new_idx);
       }
 
@@ -861,11 +861,11 @@ namespace Clipper2Lib {
     if (!op2) return Path64();
 
     Path64 result;
-    result.push_back(op->pt);
+    result.emplace_back(op->pt);
     op2 = op->next;
     while (op2 != op)
     {
-      result.push_back(op2->pt);
+      result.emplace_back(op2->pt);
       op2 = op2->next;
     }
     return result;
@@ -885,7 +885,7 @@ namespace Clipper2Lib {
       else if (rect_.Contains(path_bounds_))
       {
         // the path must be completely inside rect_
-        result.push_back(path);
+        result.emplace_back(path);
         continue;
       }
 
@@ -1015,11 +1015,11 @@ namespace Clipper2Lib {
     Path64 result;
     if (!op || op == op->next) return result;
     op = op->next; // starting at path beginning
-    result.push_back(op->pt);
+    result.emplace_back(op->pt);
     OutPt2 *op2 = op->next;
     while (op2 != op)
     {
-      result.push_back(op2->pt);
+      result.emplace_back(op2->pt);
       op2 = op2->next;
     }
     return result;
