@@ -108,10 +108,11 @@ the four vertices that define the two segments that are intersecting.
 
 #include <cstdlib>
 #include <vector>
-#include "clipper2/clipper.core.h"
-#include "clipper2/clipper.engine.h"
-#include "clipper2/clipper.offset.h"
-#include "clipper2/clipper.rectclip.h"
+#include "clipper.core.h"
+#include "clipper.engine.h"
+#include "clipper.offset.h"
+#include "clipper.rectclip.h"
+#include "clipper.minkowski.h"
 
 namespace Clipper2Lib {
 
@@ -227,11 +228,11 @@ EXTERN_DLL_EXPORT CPathsD InflatePathD(const CPathD& path,
     const double &arc_tolerance = 0.0, const bool &reverse_solution = false);
 
 // RectClip & RectClipLines:
-EXTERN_DLL_EXPORT CPaths64 RectClip64(const CRect64& rect,
+EXTERN_DLL_EXPORT CPaths64 RectClipF64(const CRect64& rect,
   const CPaths64& paths);
 EXTERN_DLL_EXPORT CPathsD RectClipD(const CRectD& rect,
   const CPathsD& paths, const int &precision = 2);
-EXTERN_DLL_EXPORT CPaths64 RectClipLines64(const CRect64& rect,
+EXTERN_DLL_EXPORT CPaths64 RectClipLinesF64(const CRect64& rect,
   const CPaths64& paths);
 EXTERN_DLL_EXPORT CPathsD RectClipLinesD(const CRectD& rect,
   const CPathsD& paths, const int &precision = 2);
@@ -741,11 +742,11 @@ EXTERN_DLL_EXPORT CPathsD InflatePathD(const CPathD& path,
     return CreateCPathsDFromPaths64(result, 1 / scale);
 }
 
-EXTERN_DLL_EXPORT CPaths64 RectClip64(const CRect64& rect, const CPaths64& paths)
+EXTERN_DLL_EXPORT CPaths64 RectClipF64(const CRect64& rect, const CPaths64& paths)
 {
   if (CRectIsEmpty(rect) || !paths) return nullptr;
   Rect64 r64 = CRectToRect(rect);
-  class RectClip64 rc(r64);
+  RectClip64 rc(r64);
   Paths64 pp = ConvertCPathsToPathsT(paths);
   Paths64 result = rc.Execute(pp);
   return CreateCPathsFromPathsT(result);
@@ -760,13 +761,13 @@ EXTERN_DLL_EXPORT CPathsD RectClipD(const CRectD& rect, const CPathsD& paths, co
   RectD r = CRectToRect(rect);
   Rect64 rec = ScaleRect<int64_t, double>(r, scale);
   Paths64 pp = ConvertCPathsDToPaths64(paths, scale);
-  class RectClip64 rc(rec);
+  RectClip64 rc(rec);
   Paths64 result = rc.Execute(pp);
 
   return CreateCPathsDFromPaths64(result, 1 / scale);
 }
 
-EXTERN_DLL_EXPORT CPaths64 RectClipLines64(const CRect64& rect,
+EXTERN_DLL_EXPORT CPaths64 RectClipLinesF64(const CRect64& rect,
   const CPaths64& paths)
 {
   if (CRectIsEmpty(rect) || !paths) return nullptr;
@@ -824,4 +825,6 @@ EXTERN_DLL_EXPORT void SetZCallbackD(DLLZCallbackD callback)
 #endif
 
 }
+
 #endif  // CLIPPER2_EXPORT_H
+
